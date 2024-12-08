@@ -19,7 +19,7 @@ jobs:
     - name: Set up CMake
       uses: lukka/get-cmake@v3.26.3
       with:
-        cmakeVersion: '3.26.3'
+        cmakeVersion: '3.26.3'  # Исправлено с 'cmake-version' на 'cmakeVersion'
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y build-essential dpkg-dev
@@ -28,12 +28,16 @@ jobs:
       id: set_build_number
       run: |
         echo "GITHUB_RUN_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+        echo "Build number set to $GITHUB_RUN_NUMBER"
 
     - name: Configure CMake
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       run: cmake --build build --config Release
+
+    - name: Make binary executable
+      run: chmod +x build/helloworld
 
     - name: Run program
       run: |
@@ -57,12 +61,17 @@ jobs:
 
     - name: List build directory
       run: |
+        echo "Contents of build directory:"
         ls -la build
-        ls -la build/
 
     - name: Display package contents
       run: |
-        ls -la build/helloworld-0.0.${{ github.run_number }}-Linux.deb
+        PACKAGE_FILE=$(ls build/*.deb | head -n 1)
+        echo "Found package: $PACKAGE_FILE"
+        if [ ! -f "$PACKAGE_FILE" ]; then
+          echo "Debian package not found!"
+          exit 1
+        fi
 
     - name: Create release
       id: create_release
@@ -83,6 +92,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/helloworld-0.0.${{ github.run_number }}-Linux.deb
+        asset_path: ${{ steps.set_build_number.outputs.GITHUB_RUN_NUMBER }}/helloworld-0.0.${{ github.run_number }}-Linux.deb
         asset_name: helloworld-0.0.${{ github.run_number }}-Linux.deb
         asset_content_type: application/octet-stream
