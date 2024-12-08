@@ -19,21 +19,21 @@ jobs:
     - name: Set up CMake
       uses: lukka/get-cmake@v3.26.3
       with:
-        cmakeVersion: '3.26.3'  # Исправлено с 'cmake-version' на 'cmakeVersion'
+        cmakeVersion: '3.26.3'
 
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y build-essential dpkg-deb
+      run: sudo apt-get update && sudo apt-get install -y build-essential dpkg-dev
+
+    - name: Set build number
+      id: set_build_number
+      run: |
+        echo "GITHUB_RUN_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
     - name: Configure CMake
-      run: cmake -S . -B build
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       run: cmake --build build --config Release
-
-    - name: Set build number
-      id: set_build_number  # Добавлен идентификатор
-      run: |
-        echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
     - name: Run program
       run: |
@@ -50,29 +50,28 @@ jobs:
           exit 1
         fi
 
-    - name: Package binary
+    - name: Package binary with CPack
       run: |
         cd build
-        mkdir -p package/DEBIAN
-        echo "Package: helloworld" > package/DEBIAN/control
-        echo "Version: 0.0.${{ github.run_number }}" >> package/DEBIAN/control
-        echo "Section: base" >> package/DEBIAN/control
-        echo "Priority: optional" >> package/DEBIAN/control
-        echo "Architecture: amd64" >> package/DEBIAN/control
-        echo "Maintainer: Your Name <youremail@example.com>" >> package/DEBIAN/control
-        echo "Description: Hello World application" >> package/DEBIAN/control
-        mkdir -p package/usr/local/bin
-        cp helloworld package/usr/local/bin/
-        dpkg-deb --build package helloworld-0.0.${{ github.run_number }}-Linux.deb
+        cpack -G DEB
+
+    - name: List build directory
+      run: |
+        ls -la build
+        ls -la build/
+
+    - name: Display package contents
+      run: |
+        ls -la build/helloworld-0.0.${{ github.run_number }}-Linux.deb
 
     - name: Create release
-      id: create_release  # Добавлен идентификатор
+      id: create_release
       if: startsWith(github.ref, 'refs/tags/')
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref_name }}  # Используем github.ref_name вместо github.ref
+        tag_name: ${{ github.ref_name }}
         release_name: Release ${{ github.ref_name }}
         draft: false
         prerelease: false
