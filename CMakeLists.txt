@@ -15,12 +15,6 @@ else()
     set(CPACK_PACKAGE_VERSION "0.0.1")
 endif()
 
-# Настройка CPack
-include(CPack)
-
-# Определение генератора пакетов
-set(CPACK_GENERATOR "DEB")
-
 # Основные параметры пакета
 set(CPACK_PACKAGE_NAME "helloworld")
 set(CPACK_PACKAGE_CONTACT "Your Name <youremail@example.com>")
@@ -28,3 +22,9 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "base")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Hello World application")
+
+# Определение генератора пакетов
+set(CPACK_GENERATOR "DEB")
+
+# Настройка CPack
+include(CPack)
