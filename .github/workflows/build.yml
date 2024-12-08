@@ -31,6 +31,9 @@ jobs:
         echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
         echo "Build number set to $GITHUB_RUN_NUMBER and BUILD_NUMBER"
 
+    - name: Print environment variables
+      run: env
+
     - name: Configure CMake
       run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
@@ -39,6 +42,9 @@ jobs:
 
     - name: Make binary executable
       run: chmod +x build/helloworld
+
+    - name: Verify executable permissions
+      run: ls -la build/helloworld
 
     - name: Run program
       run: |

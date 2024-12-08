@@ -3,7 +3,8 @@ project(helloworld VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(helloworld helloworld.cpp)
+# Добавляем исполняемый файл, указывая путь к исходнику
+add_executable(helloworld 1/helloworld.cpp)
 
 # Установка цели для установки исполняемого файла
 install(TARGETS helloworld DESTINATION bin)
@@ -17,7 +18,7 @@ endif()
 
 # Основные параметры пакета
 set(CPACK_PACKAGE_NAME "helloworld")
-set(CPACK_PACKAGE_CONTACT "Your Name <youremail@example.com>")
+set(CPACK_PACKAGE_CONTACT "Your Name <youremail@example.com>")  # Укажите ваш контакт
 set(CPACK_DEBIAN_PACKAGE_SECTION "base")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE "amd64")
@@ -28,3 +29,4 @@ set(CPACK_GENERATOR "DEB")
 
 # Настройка CPack
 include(CPack)
+
