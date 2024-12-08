@@ -1,0 +1,8 @@
+Package: helloworld
+Version: 0.0.${BUILD_NUMBER}
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Your Name <your_email@example.com>
+Description: Hello World CLI tool
+ A simple CLI tool that prints build version and a message.
